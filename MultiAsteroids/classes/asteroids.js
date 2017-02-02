@@ -22,18 +22,14 @@ Asteroid.prototype.render = function () {
   pop();
 }
 
-Asteroid.prototype.update = function (vel) {
+Asteroid.prototype.update = function (speed) {
   if (this.pos.y > worldHeight){
-    this.pos.y = this.pos.y + vel.y - worldHeight;
+    this.pos.y = this.pos.y + speed - worldHeight;
   } else if(this.pos.y < 0) {
-    this.pos.y = vel.y + worldHeight;
+    this.pos.y = speed + worldHeight;
+  } else {
+    this.pos.y += speed;
   }
-  if (this.pos.x > worldWidth){
-    this.pos.x = this.pos.x + vel.x - worldWidth;
-  } else if(this.pos.x < 0) {
-    this.pos.x = vel.x + worldWidth;
-  }
-  this.pos.add(vel);
 }
 
 Asteroid.prototype.rotate = function (angle) {

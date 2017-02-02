@@ -16,11 +16,10 @@ function draw() {
   //background(255);
   for (var i = 0; i < asteroids.length; i++) {
     asteroids[i].render();
-    asteroids[i].update(ship.vel);
+    asteroids[i].update(ship.speed);
   }
 
   ship.render();
-  ship.turn();
   ship.update();
 }
 
@@ -37,13 +36,20 @@ function keyPressed() {
   } else if (keyCode == 65 || keyCode == 37) {
     var change = 2;
     ship.angle -= change;
-    if (ship.angle >= 360 || ship.angle <= -360) {
+    if (ship.angle >= 360) {
       ship.angle %= 360;
+    } else if (ship.angle < 0) {
+      ship.angle = 360 + ship.angle;
     }
     ship.rotate(change);
   } else if (keyCode == 68 || keyCode == 39) {
     var change = -2;
     ship.angle -= change;
+    if (ship.angle >= 360) {
+      ship.angle %= 360;
+    } else if (ship.angle < 0) {
+      ship.angle = 360 + ship.angle;
+    }
     ship.rotate(change);
   } else if (keyCode == 87 || keyCode == 38) {
     ship.accelerating(true);
