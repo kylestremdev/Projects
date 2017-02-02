@@ -66,3 +66,9 @@ Ship.prototype.decelerating = function (bool) {
 Ship.prototype.decelerate = function () {
   this.vel.sub(createVector(0,0.2));
 };
+
+Ship.prototype.rotate = function (change) {
+  asteroids.forEach(function (asteroid) {
+    asteroid.rotate(change);
+  });
+};

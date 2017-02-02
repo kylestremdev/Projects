@@ -36,30 +36,84 @@ Asteroid.prototype.update = function (vel) {
   this.pos.add(vel);
 }
 
-Asteroid.prototype.calculateAngle = function (ship_pos, asteroid_pos) {
-  angleMode(RADIANS);
+Asteroid.prototype.rotate = function (angle) {
+  angleMode(DEGREES);
+  var angleFromYAxis = this.calculateInitialAngle();
+  var angleFromYAxis = angleFromYAxis % 360;
+  var theta = angleFromYAxis + angle;
+  theta %= 360;
 
-  var p1 = createVector(ship_pos.x, ship_pos.y);
-  var p2 = createVector(asteroid_pos.x, asteroid_pos.y);
-  var p3 = createVector(asteroid_pos.x, ship_pos.y);
+  var d = ship.pos.dist(this.pos);
 
-  var p12 = p1.dist(p2);
-  var p13 = p1.dist(p3);
-  var p23 = p2.dist(p3);
+  var pointA = ship.pos;
+  var pointB = createVector(ship.pos.x, ship.pos.y - d);
+  var pointC = createVector(0,0);
 
-  return acos(((p12 ** 2) + (p13 ** 2) - (p23 ** 2)) / (2 * p12 * p13));
+  var lineAB = d;
+  var lineAC = d;
+  var lineBC;
+
+  var lineABsquared = Math.pow(lineAB, 2);
+  var lineACsquared = Math.pow(lineAC, 2);
+  var lineBCsquared;
+
+  lineBC = Math.sqrt(lineABsquared + lineACsquared - (2 * lineAB * lineAC * cos(theta)));
+  lineBCsquared = lineBC ** 2;
+
+  pointC.y = (lineABsquared + lineACsquared - lineBCsquared) / (2 * lineAB);
+  pointC.x = Math.sqrt(lineABsquared - (pointC.y ** 2));
+
+  var deltaX = pointC.x;
+  var deltaY = pointC.y;
+
+  if (theta >= 180){
+    this.pos.x = ship.pos.x - deltaX;
+  } else if (theta < 0) {
+    this.pos.x = ship.pos.x - deltaX
+  } else {
+    this.pos.x = ship.pos.x + deltaX;
+  }
+  this.pos.y = ship.pos.y - deltaY;
+
 };
 
-Asteroid.prototype.translateAngle = function (angle, ship_pos, r, i) {
-  angleMode(RADIANS);
+Asteroid.prototype.calculateInitialAngle = function () {
+  var quadrant = this.calculateQuadrant();
+  var distanceShipToAsteroid = ship.pos.dist(this.pos);
 
-  while (angle > (2 * PI)) {
-    angle -= (2 * PI);
+  var point1 = ship.pos;
+  var point2 = this.pos;
+  var point3 = createVector(ship.pos.x, ship.pos.y - distanceShipToAsteroid);
+
+  var line12 = point1.dist(point2);
+  var line13 = point1.dist(point3);
+  var line23 = point2.dist(point3);
+
+  var line12SQ = line12 ** 2;
+  var line13SQ = line13 ** 2;
+  var line23SQ = line23 ** 2;
+
+  var angleFromYAxis = acos((line12SQ + line13SQ - line23SQ) / (2 * line13 * line13));
+  if (quadrant > 2) {
+    angleFromYAxis = 360 - angleFromYAxis;
   }
+  return angleFromYAxis;
+};
 
-  var x = ship.pos.x + (r * cos(angle - (PI/2)));
-  var y = ship.pos.y + (r * sin(angle - (PI/2)));
-  this.pos.x = x;
-  this.pos.y = y;
-  console.log(angle, r);
+Asteroid.prototype.calculateQuadrant = function () {
+  if (this.pos.x >= ship.pos.x) {       // quadrant 1 or 2
+    if (this.pos.x > ship.pos.x && this.pos.y <= ship.pos.y) {    // quadrant 1
+      return 1;
+    } else if (this.pos.x >= ship.pos.x && this.pos.y > ship.pos.y) {   // quadrant 2
+      return 2;
+    } else {      // quadrant 4 edge case, if this.pos.x == ship.pos.x && this.pos.y < ship.pos.y
+      return 4;
+    }
+  } else {      // quadrant 3 or 4
+    if (this.pos.y >= ship.pos.y) {     // quadrant 3
+      return 3;
+    } else {    // quadrant 4
+      return 4;
+    }
+  }
 };
