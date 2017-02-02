@@ -4,10 +4,10 @@ function Ship(){
   this.r = 20;
   this.speed = 0;
   this.vel = createVector(1, 1).mult(0);
-  this.heading = 0;
-  this.rotation = 0;
   this.isAccelerating = false;
   this.isDecelerating = false;
+  this.isTurning = false;
+  this.turnDirection = undefined;
   this.force = createVector(0,0);
   this.angle = 0;
   this.isRotating = false;
@@ -22,6 +22,26 @@ function Ship(){
   };
 
   this.update = function () {
+    if (this.isTurning && this.turnDirection == 'left') {
+      var change = 2;
+      ship.angle -= change;
+      if (ship.angle >= 360) {
+        ship.angle %= 360;
+      } else if (ship.angle < 0) {
+        ship.angle = 360 + ship.angle;
+      }
+      ship.rotate(change);
+    } else if (this.isTurning && this.turnDirection == 'right') {
+      var change = -2;
+      ship.angle -= change;
+      if (ship.angle >= 360) {
+        ship.angle %= 360;
+      } else if (ship.angle < 0) {
+        ship.angle = 360 + ship.angle;
+      }
+      ship.rotate(change);
+    }
+
     if (this.isAccelerating && this.speed < 20){
       this.accelerate();
     } else if (this.isDecelerating && this.speed > 0.2) {
@@ -64,6 +84,11 @@ Ship.prototype.decelerate = function () {
   }
 };
 
+Ship.prototype.setTurning = function (bool, dir) {
+  this.isTurning = bool;
+  this.turnDirection = dir;
+};
+
 Ship.prototype.rotate = function (change) {
   asteroids.forEach(function (asteroid) {
     asteroid.rotate(change);
@@ -94,24 +119,19 @@ Ship.prototype.turn = function () {
     quadrant = 1;
     this.vel.x = pointC.x;
     this.vel.y = pointC.y * -1;
-    console.log("+,-");
   } else if (theta > 90 && theta <= 180) {    // quadrant 2
     quadrant = 2;
     this.vel.x = pointC.x;
     this.vel.y = pointC.y * -1;
-    console.log("+,+");
   } else if (theta > 180 && theta <= 270) {   // quadrant 3
     quadrant = 3;
     this.vel.x = -pointC.x;
     this.vel.y = pointC.y * -1;
-    console.log("-,+");
   } else if ((theta > 270 && theta < 360) || theta == 0) {   // quadrant 4
     quadrant = 4;
     this.vel.x = -pointC.x;
     this.vel.y = -pointC.y;
-    console.log("-,-");
   }
-  console.log(this.worldPos);
 };
 
 function calculateZ(ab, ac, theta){
