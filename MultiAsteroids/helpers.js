@@ -88,7 +88,7 @@ function calculateInitialAngle (asteroid) {
   var line13SQ = line13 ** 2;
   var line23SQ = line23 ** 2;
 
-  var angleFromYAxis = Math.ceil(acos((line12SQ + line13SQ - line23SQ) / (2 * line13 * line13)))|| 180;
+  var angleFromYAxis = acos((line12SQ + line13SQ - line23SQ) / (2 * line12 * line13));
   if (quadrant > 2) {
     angleFromYAxis = -angleFromYAxis;
   }
@@ -96,7 +96,6 @@ function calculateInitialAngle (asteroid) {
   if (angleFromYAxis <= 0) {
     angleFromYAxis = 360 + angleFromYAxis;
   }
-  console.log("initial: " + angleFromYAxis, point1, point2, point3);
 
   return angleFromYAxis;
 }
@@ -124,7 +123,7 @@ function rotateAsteroid (asteroid, angle) {
   angleMode(DEGREES);
   var quadrant = calculateQuadrant(asteroid);
   var angleFromYAxis = calculateInitialAngle(asteroid);
-  var theta = Math.ceil(angleFromYAxis + angle);
+  var theta = angleFromYAxis + angle;
   var dir = angle > 0 ? "left" : "right";
   theta %= 360;
 
@@ -153,8 +152,6 @@ function rotateAsteroid (asteroid, angle) {
   var deltaX = Math.abs(Math.abs(asteroid.renderPos.x) - Math.abs(pointC.x));
   var deltaY = Math.abs(Math.abs(asteroid.renderPos.y) - Math.abs(pointC.y));
 
-  console.log(theta, asteroid.renderPos, pointC, createVector(deltaX, deltaY));
-
   if (dir == "left") {
     if (quadrant == 1) {
       asteroid.renderPos.x += deltaX;
@@ -168,6 +165,20 @@ function rotateAsteroid (asteroid, angle) {
     } else if (quadrant == 4) {
       asteroid.renderPos.x += deltaX;
       asteroid.renderPos.y -= deltaY;
+    }
+  } else {
+    if (quadrant == 1) {
+      asteroid.renderPos.x -= deltaX;
+      asteroid.renderPos.y -= deltaY;
+    } else if (quadrant == 2) {
+      asteroid.renderPos.x += deltaX;
+      asteroid.renderPos.y -= deltaY;
+    } else if (quadrant == 3) {
+      asteroid.renderPos.x += deltaX;
+      asteroid.renderPos.y += deltaY;
+    } else if (quadrant == 4) {
+      asteroid.renderPos.x -= deltaX;
+      asteroid.renderPos.y += deltaY;
     }
   }
 }
