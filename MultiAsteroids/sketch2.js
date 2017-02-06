@@ -11,7 +11,7 @@ function setup () {
 
   clientShipRenderPos = clientShip.worldPos.copy().sub(origin);
 
-  generateAsteroids(5);
+  generateAsteroids(20);
 }
 
 function draw () {
@@ -36,9 +36,17 @@ function keyPressed() {
   if (keyCode == 32) {
     // shoot lasers
   } else if (keyCode == 65 || keyCode == 37) {
-    rotateAsteroids(3);
+    clientShip.heading -= 3;
+    if (clientShip.heading < 0) {
+      clientShip.heading += 360;
+    }
+    rotateAsteroids(clientShip.heading);
   } else if (keyCode == 68 || keyCode == 39) {
-    rotateAsteroids(-3);
+    clientShip.heading += 3;
+    if (clientShip.heading > 360) {
+      clientShip.heading %= 360;
+    }
+    rotateAsteroids(clientShip.heading);
   } else if (keyCode == 87 || keyCode == 38) {
     //ship.accelerating(true);
   } else if (keyCode == 83 || keyCode == 40) {
