@@ -122,7 +122,7 @@ function rotateAsteroid (asteroid, angle) {
 
   asteroid.rotatedRenderPos = createVector(x,y);
 
-  console.log(initialAngle, angle, x, y, theta, newAngle);
+  console.log(initialAngle, angle, x, y, theta, newAngle, asteroid.renderPos);
 }
 
 function rotateAsteroids(angle) {
